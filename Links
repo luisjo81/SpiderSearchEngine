@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<targets>
+        <links id = "1">
+                <URL1>www.diarioextra.com</URL1>
+                <URL2>www.wikipedia.com</URL2>
+                <URL3>www.ebay.com</URL3> 
+                <URL4>www.oracle.com</URL4> 
+                <URL5>www.aprenderaprogramar.com</URL5> 
+        </links>   
+</targets>
