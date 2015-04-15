@@ -1,0 +1,57 @@
+package XML;
+
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+import spidersearchengine.Deque;
+
+public class XMLParserLinks{
+
+    
+    public XMLParserLinks(){//tamaño del texto q se ingresa
+        
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        try {
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document doc = builder.parse("C:\\Users\\Kattia Ramirez\\Documents\\NetBeansProjects\\SpiderSearchEngine\\src\\XML\\Links.xml");
+            NodeList targets = doc.getElementsByTagName("links");
+            
+            for (int i=0; i<targets.getLength();i++){
+                Node t = targets.item(i);
+                Deque cola = new Deque(5);
+                if(t.getNodeType()==Node.ELEMENT_NODE){
+                    Element links = (Element)t;
+                    String id = links.getAttribute("id");
+                    NodeList URLS = links.getChildNodes();
+                    for (int j = 0; j<URLS.getLength();j++){
+                        Node n = URLS.item(j);
+                        if(n.getNodeType()==Node.ELEMENT_NODE){
+                            Element url = (Element) n;
+                           
+                            
+                            cola.insertarhead(url.getTextContent());
+                            cola.print();
+                            //System.out.println(url.getTextContent());
+                        }
+                    }
+                }
+            }
+        } catch (ParserConfigurationException ex) {
+            Logger.getLogger(XMLParserLinks.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SAXException ex) {
+            Logger.getLogger(XMLParserLinks.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(XMLParserLinks.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
+    }
+}
