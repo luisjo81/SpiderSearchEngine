@@ -1,0 +1,99 @@
+package spidersearchengine;
+
+//se importan las librerias a utilizar
+import HTML.GetHTML;
+import XML.XMLParserConfig;
+import XML.XMLParserLinks;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import javax.swing.*;
+
+public class SpiderSearchEngine extends JFrame{//clase que extiende de JFrame
+    private JButton buscar;//se crea una variable para un boton
+    private JTextField espacio;//se crea una variable para un campo de texto
+    
+    
+    private String busqueda;
+
+    public SpiderSearchEngine(){//constructor
+        
+        
+        
+        setLayout(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//se cierra la ventana al dar click a la x
+        setTitle("Spider Search Engine");//nombre de la ventana
+        Image icono = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/Recursos/spider.png"));//icono de la ventana
+        setIconImage(icono);//se asigna el icono
+        
+        espacio = new JTextField();//se instancia un campo de texto
+        espacio.setBounds(250,250,300,30);//se definen las dimensiones del campo de texto
+        add(espacio);//se agregar el campo de texto
+        espacio.addKeyListener(new KeyAdapter()
+                
+{
+   public void keyTyped(KeyEvent e)// metodo que verifica que se ingresen solo letras y el caracter espacio
+   {
+      char caracter = e.getKeyChar();
+      
+
+      // Verificar si la tecla pulsada no es un digito
+      if(((caracter < 'A') || (caracter > 'z')||(caracter =='^')||(caracter =='[')||(caracter ==']')||(caracter =='_')||(caracter =='`')||(caracter =='\\'))&&caracter !=  KeyEvent.VK_BACK_SPACE)
+      {
+          
+          if(caracter != ' '){
+         e.consume(); } // ignorar el evento de teclado
+      }
+      
+      
+      
+      
+   }
+});
+        
+       
+        buscar = new JButton();//se instancia un boton
+        buscar.setText("Buscar");//etiqueta del boton
+        buscar.setBounds(355, 300, 80, 30);//dimensiones del boton
+        add(buscar);//se agrega el boton
+        buscar.addActionListener(new ActionListener() {
+ 
+            public void actionPerformed(ActionEvent e)
+            {
+                busqueda = espacio.getText();//asigna el texto ingresado a la caja de texto a una variable
+                System.out.println("Buscando: "+busqueda);
+                Filtro f = new Filtro();
+                f.filtrar(busqueda);
+                XMLParserLinks x = new XMLParserLinks();
+                
+                String html = new GetHTML().getHTML("http://www.ebay.com/");
+                System.out.println(html);
+                
+                dispose();
+                
+            }
+        });      
+        
+        
+       
+       
+    }
+    
+    
+    public static void main(String[] args) {//metodo main
+        
+        
+        SpiderSearchEngine ventana = new SpiderSearchEngine();//se instancia una ventana
+        ventana.setVisible(true);//se hace la ventana visible 
+        ventana.setSize(800,600);//se definen las dimensiones de la ventana
+        
+        
+        
+    }
+
+    
+    
+}
