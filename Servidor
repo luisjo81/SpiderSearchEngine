@@ -1,0 +1,45 @@
+package Sockets;
+
+//se importan las librerias a utilizar
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class Servidor {
+    
+    ServerSocket serverSocket;//se crea una variable serverSocket
+    Socket socketCliente;//se crea una variable socketCliente
+    DataInputStream in;//se crea una variable DataInputStream
+    DataOutputStream out;// se crea una variable DataOutputStream
+    String mensaje;//se crea una variable tipo string
+    
+    
+    public Servidor(){
+    try
+        {
+            serverSocket=new ServerSocket(7777);//se instancia 
+            
+            while(true){
+                   socketCliente=serverSocket.accept();
+                   in=new DataInputStream(socketCliente.getInputStream());
+                   mensaje=in.readUTF();
+                   System.out.println(mensaje);
+                   
+                   if (mensaje.equals("peticion")){
+                       out=new DataOutputStream(socketCliente.getOutputStream());
+                       out.writeUTF("peticion realizada");
+                       out.close();
+                   }
+                   
+                   in.close();
+                   socketCliente.close();
+            }
+        }
+        catch(Exception ex)
+        {
+            System.out.print(ex.getMessage());
+        }
+
+}
+}
