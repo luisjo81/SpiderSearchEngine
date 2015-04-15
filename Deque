@@ -1,0 +1,85 @@
+/**
+* acomoda datos en una lista de tipo dequeue de cola que es un (double ended queue)
+* puede remover y agregar datos en el principio o el final a de la cola 
+* 
+*
+* @author  Jose luis martinez y Gustavo Martinez
+* @version 1.0
+* @since   2015-03-27  
+*/
+package spidersearchengine;
+
+public class Deque {
+   /**
+   * Este metodo crea un arreglo de cierto tamano
+   * @param  maxSize Tamano maximo del arreglo
+   * @param Nitems Cantidad de datos en el arreglo
+   * @param head primera posicion del arreglo
+   * @param tail ultima posicion del arreglo
+   */
+    private final String[] dequeueArray;
+    private final int maxSize; //se crea contador para tamano de arreglo
+    private int nItems; // variable para cantidad de items guardados
+    private int head; // se situa en una posicion para saber cuantos items estan en el arreglo  
+    private int tail;// se situa en el primer dato ingresado al arreglo
+
+    private boolean vacio() { return nItems == 0; } // revisa si nItems esta vacio
+    private boolean lleno() { return nItems == maxSize; } // revisa si nItems esta lleno
+
+    public Deque(int maxSize) {
+        this.maxSize = maxSize;
+        dequeueArray = new String [maxSize]; // define tamano del arreglo
+        nItems = 0;
+        head = 0;
+        tail = maxSize - 1;
+    }
+
+    public void insertarhead(String j) {           // inserta un dato al arreglo
+        if (lleno())      // comprueba que el arreglo no esta lleno
+            throw new RuntimeException("el arreglo esta lleno"); // si esta lleno manda excepcion
+
+        if (head == 0)         
+            head = maxSize;
+        dequeueArray[--head] = j;         
+        nItems++;                     
+    }
+
+    public void insertartail(String i) {
+        if (lleno())                        //revisa que el arreglo no esta lleno
+            throw new RuntimeException("el arreglo esta lleno");
+
+        if (tail == maxSize - 1)      // mueve el tail una posicion
+            tail = -1;
+        dequeueArray[++tail] = i;         
+        nItems++;                     
+    }
+
+    public String removerhead() {          // remueve lo que se encuentra en head
+        if (vacio())                     // se asegura que no este vacio
+            throw new RuntimeException("el arreglo esta vacio");
+
+        String temp = dequeueArray[head];
+        head++;
+        if (head == maxSize - 1)
+            head = -1;             //mueve el head una posicion
+        nItems--;                  //remueve el items
+        return temp;
+    }
+
+    public String removertail() {        //remueve lo que esta en tail
+        if (vacio())                   //revisa que no este vacio
+            throw new RuntimeException("el arreglo esta vacio");
+
+        String temp = dequeueArray[tail]; //temp esta en arreglo se borra
+        tail--;
+        if (tail < 0)                   
+            tail = maxSize - 1;
+        nItems--;   
+        return temp;
+    }
+    
+    public void print(){
+        System.out.println(dequeueArray[4]);//prueba
+    }
+
+}
