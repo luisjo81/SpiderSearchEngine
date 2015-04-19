@@ -11,33 +11,36 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import spidersearchengine.Deque;
 
-public class XMLParserConfig {
-   
-    public XMLParserConfig(){
+public class XMLParserConfig{
+
+    Deque cola = new Deque(3);
+    public XMLParserConfig(){//tamaño del texto q se ingresa
         
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         try {
             DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc = builder.parse("C:\\Users\\Kattia Ramirez\\Documents\\NetBeansProjects\\SpiderSearchEngine\\src\\XML\\Configuracion.xml");
-            NodeList spider = doc.getElementsByTagName("links");
+            Document doc = builder.parse("/home/luis/Escritorio/Netbeans/SpiderSearchEngine/src/XML/Configuracion.xml");
+            NodeList spider = doc.getElementsByTagName("caracteristicas");
             
             for (int i=0; i<spider.getLength();i++){
                 Node t = spider.item(i);
+                
                 if(t.getNodeType()==Node.ELEMENT_NODE){
                     Element caracteristicas = (Element)t;
                     String id = caracteristicas.getAttribute("id");
-                    NodeList car = caracteristicas.getChildNodes();
-                    for (int j = 0; j<car.getLength();j++){
-                        Node n = car.item(j);
+                    NodeList cars = caracteristicas.getChildNodes();
+                    for (int j = 0; j<cars.getLength();j++){
+                        Node n = cars.item(j);
+                        
                         if(n.getNodeType()==Node.ELEMENT_NODE){
-                            Element maxThreads= (Element) n;
-                            Element recursivity= (Element) n;
-                            Element reindex= (Element) n;
+                            Element ca = (Element) n;
+                            //System.out.println("ele ca="+ ca.getTextContent());
                             
-                            System.out.println("Caracteristicas "+ id + ":" + maxThreads.getTagName()+ "="+ maxThreads.getTextContent());
-                            System.out.println("Caracteristicas "+ id + ":" + recursivity.getTagName()+ "="+ recursivity.getTextContent());
-                            System.out.println("Caracteristicas "+ id + ":" + reindex.getTagName()+ "="+ reindex.getTextContent());
+                            cola.insertarhead(ca.getTextContent());
+                            cola.print();
+                           
                         }
                     }
                 }
@@ -52,4 +55,14 @@ public class XMLParserConfig {
         
         
     }
+    public String getMaxThreads(){
+        return cola.getArray()[2];
+    }
+    public String getRecursivity(){
+        return cola.getArray()[1];
+    }
+    public String getReindex(){
+        return cola.getArray()[0];
+    }
+    
 }
