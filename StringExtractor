@@ -1,0 +1,191 @@
+
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package spidersearchengine;
+
+import HTML.GetHTML;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.htmlparser.*;
+import org.htmlparser.util.*;
+import org.htmlparser.tags.*;
+import org.htmlparser.filters.*;
+import org.htmlparser.beans.StringBean;
+import org.htmlparser.util.ParserException;
+  
+/**
+ *
+ * @author Gustavo
+ */
+/**
+33  * Extract plaintext strings from a web page.
+34  * Illustrative program to gather the textual contents of a web page.
+35  * Uses a {@link org.htmlparser.beans.StringBean StringBean} to accumulate
+36  * the user visible text (what a browser would display) into a single string.
+37  */
+ public class StringExtractor
+ {
+     private String resource;
+ 
+     /**
+43      * Construct a StringExtractor to read from the given resource.
+44      * @param resource Either a URL or a file name.
+45      */
+     public StringExtractor (String resource)
+     {
+         this.resource = resource; 
+     }
+ 
+     /**
+52      * Extract the text from a page.
+53      * @param links if <code>true</code> include hyperlinks in output.
+54      * @return The textual contents of the page.
+55      */
+     public String extractStrings (boolean links)
+         throws
+             ParserException
+     {
+         StringBean sb;
+ 
+         sb = new StringBean ();
+         sb.setLinks (links);
+         sb.setURL (resource);
+ 
+         return (sb.getStrings ());
+     }
+ 
+     
+    // pone key words y cantidad de repeticicones en 2 listas circulares dobles
+    private static void getListwithFreq(List<String> items){
+        int count = 0;
+        Map<String,Integer> wordsWithCountHMap=new HashMap<String,Integer>();
+        for( int i = 0; i < items.size(); i++ )
+        {
+            
+            for( int j = 0; j < items.size(); j++ )
+            {
+                
+                if( items.get( i ).equals( items.get( j ) ) ){
+                    count++;
+                    
+                }   
+                if( items.get( i ).equals( items.get( j ) ) && count > 1 ){
+                    items.remove( j );      // remueve los duplicados luego de haber encontrado por lo menos 1 
+                }   
+            }                                                    
+
+            wordsWithCountHMap.put(items.get( i ),count);
+            count = 0;
+        }
+        printMap(wordsWithCountHMap);
+    }
+    
+    private static void printMap(Map<String, Integer> map){
+        ListaCircularDE keywordcount = new ListaCircularDE(); //crea lista circular doble con repeticiones de keyword
+        ListaCircularDE keyword = new ListaCircularDE(); // crea lista circular doble de keywords sin repetir
+        for (Map.Entry<String, Integer> entry : map.entrySet()) //loop que agrega valores a las listas
+        {
+            String key=entry.getKey(); //el keyword
+            Integer keycount = entry.getValue(); //repeticiones del keyword que se ingresa    
+            keywordcount.insertar(keycount);   //inserta en lista
+            keyword.insertar(key);  //inserta en lista
+            System.out.println("Key : " + key + " Value : "
+                + keycount);    // imprime el key que inserta con el valor que inserta mas que nada para probar que esten sincronizadas ambas listas
+            
+        }
+        keyword.imprimir(); //imprime lista con keyword
+        keywordcount.imprimir(); //imprime lista con repeticiones de los keywords
+    }
+    private static List<String> wordRepitionList(String phrase){;
+        String[] wordlist=phrase.split(" ");// separa el string insertado cada vez que se encuentra un espacio
+        List<String> list=new ArrayList<String>(); //inserta palabras en un arreglo
+        for(String word:wordlist)
+            list.add(word);
+        return list;
+    }
+    //hace lista de duplicados and duplicates in string too
+    private static List<String> wordRepitionList(String phrase,int splitleng){
+        String[] wordlist=phrase.split(" ");
+        List<String> listSubStringInWord=new ArrayList<String>();
+        int m=0;
+        for(String word:wordlist){
+            int k=word.length();
+
+            if(k>splitleng){//subtring duplicates
+                for(int l=0;l<=k-splitleng;l++){
+                    String s4=(word.substring(l,l+splitleng));
+                    int getfromcurrentm=listSubStringInWord.size();
+                    listSubStringInWord.add(s4);
+                }
+
+            }else{ 
+                listSubStringInWord.add(word);
+            }
+        }
+        return listSubStringInWord;
+    }
+     /**
+70      * Mainline.
+71      * @param args The command line arguments.
+72
+     * @param args */
+     public static void main (String[] args){
+         boolean links;
+         String url;
+         StringExtractor se;
+ 
+         links = false;
+         url = null;
+         for (int i = 0; i < args.length; i++)
+             if (args[i].equalsIgnoreCase ("-links"))
+                 links = true;
+             else
+                 url = args[i];
+         if (null != url)
+         {
+             se = new StringExtractor (url);
+             try
+             {   
+                 String html = new GetHTML().getHTML("http://es.wikipedia.org/wiki/Canis_lupus_familiaris");
+                //URL urltext = new URL("http://es.wikipedia.org/wiki/Canis_lupus_familiaris");
+                // NOTE: Use ArticleExtractor unless DefaultExtractor gives better results for you
+                //String textextracion = ArticleExtractor.INSTANCE.getText(urltext);           
+                //System.out.println(textextracion);
+                Pattern p = Pattern.compile("href=\"(.*?)\"");
+                Matcher m = p.matcher(html);
+                String urls = null;
+                ListaCircularDE urlss = new ListaCircularDE();
+                while (m.find()){
+                    urlss.insertar(url);
+                     
+                 urlss.imprimir();   
+                 String linktext = se.extractStrings (links);
+                 linktext = linktext.replaceAll("\\b\\w{1,3}\\b\\s?", ""); //elimina palabras de 3 letras o menos
+                 linktext = linktext.replaceAll("[^a-zA-Z]", " "); // cambia todos los caracteres que no son letras por un espacio
+                 linktext = linktext.replaceAll("\\s+", " "); //cambia todos los campos en blanco por por un solo espacio
+                 System.out.println(linktext);// imprime el string del contenido de la pagina web
+                 getListwithFreq(wordRepitionList(linktext)); //saca la frecuencia en la que se repiten las palabras
+                 Scanner sc = new Scanner( System.in );      
+             }
+             }
+             catch (ParserException e)
+             {}
+         
+         }
+         else
+             System.out.println ("Usage: java -classpath htmlparser.jar org.htmlparser.parserapplications.StringExtractor [-links] url");
+             //System.out.println(links);
+              
+             
+     
+ }
+ }
+ 
